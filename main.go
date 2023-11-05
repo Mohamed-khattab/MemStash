@@ -13,28 +13,34 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	conn ,err := ln.Accept() // recive connection 
-	if err!= nil {
+	conn, err := ln.Accept() // recive connection
+	if err != nil {
 		fmt.Println(err)
-		return 
+		return
 	}
 
-	defer conn.Close() // close the connection once finished 
+	defer conn.Close() // close the connection once finished
 
-	for{
+	for {
 		// init a buffer to hold the incoming date from network connection
-		buf := make([]byte , 1024)  
-		// read the data from the connection 
-		_, err = conn.Read(buf) 
+		buf := make([]byte, 1024)
+		// read the data from the connection
+		_, err = conn.Read(buf)
+
 		if err != nil {
-			if err ==io.EOF{
-				break 
+			if err == io.EOF {
+				break
 			}
 			fmt.Println("Error reading from client ", err.Error())
 			os.Exit(1)
-			return 
+			return
 		}
-		conn.Write([]byte("+OK\r\n"))
+
+		_, err = conn.Write([]byte("+OK\r\n"))
+		if err != nil {
+			fmt.Println("Error writing to client:", err.Error())
+			continue // Continue to the next iteration instead of exiting
+		}
 
 	}
 }
