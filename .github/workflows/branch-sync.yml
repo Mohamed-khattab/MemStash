@@ -2,8 +2,13 @@ name: Branch Sync
 
 on:
   push:
+    # This will trigger the workflow for pushes to any branch
     branches:
-      - main # Replace with the branch that, when pushed to, should trigger the sync
+      - '**'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   sync-branches:
@@ -13,6 +18,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+          fetch-depth: 0 # Necessary to fetch all history for branches
 
       - name: Set up Git
         run: |
@@ -27,11 +33,16 @@ jobs:
           # List of branches to be synced, space-separated
           BRANCHES="main feature/read-resp feature/write-resp"
           
-          # The branch to sync from
+          # The branch to sync from, in this case, it's the branch that triggered the workflow
           SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
           
           # Loop over each branch and merge changes
           for BRANCH in $BRANCHES; do
+            # Skip if SOURCE_BRANCH and BRANCH are the same
+            if [[ "$BRANCH" == "$SOURCE_BRANCH" ]]; then
+              continue
+            fi
+
             git checkout $BRANCH
             git merge $SOURCE_BRANCH --ff-only || (echo "Conflict merging $SOURCE_BRANCH into $BRANCH" && exit 1)
             git push origin $BRANCH
