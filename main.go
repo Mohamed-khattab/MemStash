@@ -20,7 +20,7 @@ func main() {
 	defer conn.Close() // close the connection once finished
 
 	for {
-		resp :=  NewResp(conn)
+		resp := NewResp(conn)
 		value, err := resp.Read()
 		if err != nil {
 			fmt.Println(err)
@@ -28,11 +28,10 @@ func main() {
 		}
 		fmt.Println(value)
 
-		_, err = conn.Write([]byte("+OK\r\n"))
-		if err != nil {
-			fmt.Println("Error writing to client:", err.Error())
-			continue // Continue to the next iteration instead of exiting
-		}
+		_ = value
+
+		writer := newWriter(conn)
+		writer.Write(Value{typ: "string", str: "OK"})
 
 	}
 }
