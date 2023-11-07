@@ -9,7 +9,7 @@ import (
 
 const (
 	STRING  = '+'
-	ERROR   = '+'
+	ERROR   = '-'
 	INTEGER = ':'
 	BULK    = '$'
 	ARRAY   = '*'
@@ -49,11 +49,97 @@ func (r *Resp) readLine() (line []byte, n int, err error) {
 func (r *Resp) readInteger() (x int, n int, err error) {
 	line, n, err := r.readLine()
 	if err != nil {
-		return 0, 0, nil 
+		return 0, 0, nil
 	}
-	i64 , err := strconv.ParseInt(string(line),10,64)
+	i64, err := strconv.ParseInt(string(line), 10, 64)
 	if err != nil {
 		return 0, 0, nil
 	}
-	return int(i64), n , err
+	return int(i64), n, err
+}
+
+func (r *Resp) Read() (Value, error) {
+	_type, err := r.reader.ReadByte()
+	if err != nil {
+		return Value{}, err
+	}
+	switch _type {
+	case ARRAY:
+		return r.readArray()
+	case BULK:
+		return r.readBulk()
+	case STRING: 
+        return r.readString() 
+	case ERROR:
+		return r.readError()
+    case INTEGER:
+        return r.readIntegerValue()
+	default:
+		fmt.Printf("Unknown type : %v", string(_type))
+		return Value{}, nil
+	}
+}
+
+func (r *Resp) readArray() (Value, error) {
+	v := Value{}
+	v.typ = "array"
+	// read the length of the array
+	len, _, err := r.readInteger()
+	if err != nil {
+		return v, err
+	}
+	// iterate over the arrays elements
+	v.array = make([]Value, 0)
+	for i := 0; i < len; i++ {
+		val, err := r.Read()
+		if err != nil {
+			return v, err
+		}
+		v.array = append(v.array, val)
+	}
+	return v, nil
+}
+func (r *Resp) readBulk() (Value , error){
+	v := Value{}
+	v.typ = "bulk"
+
+	len, _, err := r.readInteger()
+	if err != nil {
+		return v, err
+	} 
+	bulk := make([]byte , len)
+	r.reader.Read(bulk)
+	v.bulk = string(bulk)
+	r.readLine()
+
+	return v, nil
+}
+func (r *Resp) readString()(Value,error){
+	v := Value{}
+	v.typ = "string"
+	val, _, err := r.readLine()
+	if err != nil {
+		return v, err
+	}  
+	v.str = string(val)
+	return v , nil	
+}
+func (r *Resp) readError()(Value,error){
+	v := Value{}
+	v.typ = "error"
+	val, _, err := r.readLine()
+	if err != nil {
+		return v, err
+	}  
+	v.str = string(val)
+	return v , nil	
+}
+func (r *Resp) readIntegerValue() (Value, error){
+	v := Value{typ: "integer"}
+	val, _, err := r.readInteger()
+	if err != nil {
+		return v, err
+	}
+	v.num = val
+	return v , nil
 }
