@@ -31,7 +31,7 @@ jobs:
           git fetch --all
           
           # List of branches to be synced, space-separated
-          BRANCHES="main feature/read-resp feature/write-resp"
+          BRANCHES="main feature/read-resp feature/write-resp feature/CommandsHandling"
           
           # The branch to sync from, in this case, it's the branch that triggered the workflow
           SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
