@@ -55,7 +55,7 @@ This project leverages GitHub Actions to automate the synchronization of multipl
 
 To explore the GitHub Actions workflow configuration, check the `.github/workflows` directory in the repository.
 ### Video Walkthrough
-[![memstash overview](./memstash.mp4)](https://youtu.be/Aqla8YJ547o)
+[![memstash overview](./image.png)](https://youtu.be/Aqla8YJ547o)
 
 
 ## Execution
