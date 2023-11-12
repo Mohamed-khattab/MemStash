@@ -23,6 +23,7 @@ func main() {
 	for {
 		resp := NewResp(conn)
 		value, err := resp.Read()
+
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -36,7 +37,7 @@ func main() {
 			continue
 		}
 
-		command := strings.ToUpper(value.array[0].str)
+		command := strings.ToUpper(value.array[0].bulk)
 		args := value.array[1:]
 		writer := newWriter(conn)
 

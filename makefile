@@ -13,7 +13,7 @@ GORUN=$(GOCMD) run
 BINARY_NAME=myapp
 
 # List all the Go files that need to be run
-GOFILES=main.go serializer.go deserializer.go
+GOFILES=main.go serializer.go deserializer.go handler.go
 
 # Default target executed when no arguments are given to make
 default: run
