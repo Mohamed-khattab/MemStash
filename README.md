@@ -49,9 +49,21 @@ MemStash currently supports the following common Redis commands:
 - Periodically syncs AOF file with storage (`dump.aof` file).
 
 
+## GitHub Actions
+
+This project leverages GitHub Actions to automate the synchronization of multiple branches streamlining the development process.
+
+To explore the GitHub Actions workflow configuration, check the `.github/workflows` directory in the repository.
+### Video Walkthrough
+[![memstash overview](link_to_thumbnail_image)](./memstash.mp4)
+
+
 ## Execution
 
 1. **Starting MemStash:**
    - Run MemStash by executing `make run` and it will run all the fo files .
-### Video Walkthrough
 
+
+## Conclusion
+
+**MemStash**, the Redis-like server, provides an extended set of common Redis commands and serves as a foundation for future development. The addition of comments and a testing section will contribute to MemStash's maintainability and robustness. Over the upcoming weeks, the project will undergo continuous development, including the implementation of additional commands, comprehensive testing, and the addition of new features. 
