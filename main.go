@@ -54,7 +54,6 @@ func main() {
 		if !ok{
 			fmt.Println("Unknown command", command)
 			writer.Write(Value{typ: "error", str: "Unknown command"})
-
 			continue
 		}
 		if command == "SET"  || command == "HSET" {
