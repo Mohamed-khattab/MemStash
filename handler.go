@@ -1,8 +1,9 @@
-var handelers = map[string]func([]Value) Value{
- "PING": ping,
+package main
 
+var handelers = map[string]func([]Value) Value{
+	"PING": ping,
 }
 
-func ping(args []Value) Value{
-    return Value{typ: "string", str: "PONG"}
+func ping(args []Value) Value {
+	return Value{typ: "string", str: "PONG"}
 }
