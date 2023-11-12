@@ -12,6 +12,14 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	aof, err := newAOF("dump.aof")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer aof.close()
+
 	conn, err := ln.Accept() // recive connection
 	if err != nil {
 		fmt.Println(err)
@@ -48,6 +56,9 @@ func main() {
 			writer.Write(Value{typ: "error", str: "Unknown command"})
 
 			continue
+		}
+		if command == "SET"  || command == "HSET" {
+			aof.write(value)
 		}
 		result :=handler(args)
 		writer.Write(result)
