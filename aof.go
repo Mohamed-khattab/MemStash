@@ -14,6 +14,7 @@ type aof struct {
 	mu      sync.RWMutex
 }
 
+// newAOF creates a new aof object and opens a file at the given path.
 func newAOF(path string) (*aof, error) {
 	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
@@ -34,7 +35,7 @@ func newAOF(path string) (*aof, error) {
 	return aof, nil
 
 }
-
+// write writes the marshaled value to the aof file.
 func (aof *aof) write(v Value) error {
 	aof.mu.Lock()
 	defer aof.mu.Unlock()
@@ -43,9 +44,10 @@ func (aof *aof) write(v Value) error {
 	return err
 	
 }
-
-func (aof *aof) close() error{
+// close closes the aof file and releases the associated resources.
+func (aof *aof) close() error {
 	aof.mu.Lock()
 	defer aof.mu.Unlock()
-	return aof.aofFile.Close()	
+	return aof.aofFile.Close()
 }
+
