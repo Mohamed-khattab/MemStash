@@ -61,7 +61,7 @@ To explore the GitHub Actions workflow configuration, check the `.github/workflo
 ## Execution
 
 1. **Starting MemStash:**
-   - Run MemStash by executing `make run` and it will run all the fo files .
+   - Run MemStash by executing `make run` and it will run all the go files .
 
 
 ## Conclusion
