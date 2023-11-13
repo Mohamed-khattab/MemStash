@@ -54,7 +54,8 @@ MemStash currently supports the following common Redis commands:
 This project leverages GitHub Actions to automate the synchronization of multiple branches streamlining the development process.
 
 To explore the GitHub Actions workflow configuration, check the `.github/workflows` directory in the repository.
-### Video Walkthrough
+
+## Video Walkthrough
 [![memstash overview](./image.png)](https://youtu.be/Aqla8YJ547o)
 
 
