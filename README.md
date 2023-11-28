@@ -18,8 +18,8 @@ MemStash currently supports the following common Redis commands:
   - HGET
   - HGETALL
 - **Multi SET and Multi GET:**
-- mset
-- mget
+  - mset
+  - mget
 ## Project Structure Summary
 
 ### `main.go`
