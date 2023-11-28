@@ -1,4 +1,4 @@
-# MemStash: Redis-Like Server Documentation
+2# MemStash: Redis-Like Server Documentation
 
 This documentation provides an overview of MemStash, a Redis-like server implemented in Go. MemStash supports a variety of common Redis commands, offers serialization and deserialization of data in the Redis Serialization Protocol (RESP) format, and includes persistent logging of executed commands in an Append-Only File (AOF). Additionally, it emphasizes future plans for further development, including the addition of commands and a testing section.
 
@@ -6,20 +6,14 @@ This documentation provides an overview of MemStash, a Redis-like server impleme
 ## Extended Redis Commands Support
 
 MemStash currently supports the following common Redis commands:
+| Basic Commands       | Hash Commands           |**Multi SET and Multi GET:** |    
+|-----------------------|-------------------------|-------------------------|
+| PING                  | HSET                    | mset                  |
+| SET                   | HGET                    |mget                  |       
+| GET                   | HGETALL                 |
+| DEL                   |                         |
+|                       |                         |
 
-- **Basic Commands:**
-  - PING
-  - SET
-  - GET
-  - DEL
-
-- **Hash Commands:**
-  - HSET
-  - HGET
-  - HGETALL
-- **Multi SET and Multi GET:**
-  - mset
-  - mget
 ## Project Structure Summary
 
 ### `main.go`
