@@ -1,17 +1,19 @@
 package main
 
-import "sync"
+import (
+	"sync"
+)
 
 var handelers = map[string]func([]Value) Value{
-	"PING": ping,
-	"SET":  set,
-	"GET":  get,
-	"DEL":  del,
-    "HSET": hset,
-    "HGET": hget,
-    "HGETALL": hgetall,
-	"Mget": mget,
-	"Mset": mset,
+	"PING":    ping,
+	"SET":     set,
+	"GET":     get,
+	"DEL":     del,
+	"HSET":    hset,
+	"HGET":    hget,
+	"HGETALL": hgetall,
+	"MGET":    mget,
+	"MSET":    mset,
 }
 
 func ping(args []Value) Value {
@@ -112,8 +114,6 @@ func hgetall(args []Value) Value {
 		return Value{typ: "error", str: "ERR wrong number of arguments for 'hgetall' command"}
 	}
 	key := args[0].bulk
-	// Check if the key exists in the hash map,
-	// if not, return nil
 
 	HSETSMutex.RLock()
 	val, ok := HSETS[key]
@@ -130,14 +130,14 @@ func hgetall(args []Value) Value {
 	return Value{typ: "array", array: values}
 }
 func mget(args []Value) Value {
-	if len(args) != 2 {
+	if len(args) < 1 {
 		return Value{typ: "error", str: "ERR wrong number of arguments for 'mget' command"}
 	}
-	keys := args[0].array
 	var values []Value
 	SETSMutex.RLock()
 	defer SETSMutex.RUnlock()
-	for _, key := range keys {
+
+	for _, key := range args {
 		val, ok := SETs[key.bulk]
 		if !ok {
 			values = append(values, Value{typ: "null"})
@@ -146,18 +146,19 @@ func mget(args []Value) Value {
 		}
 	}
 	return Value{typ: "array", array: values}
-	
-	
+
 }
 func mset(args []Value) Value {
-	// if len(args) != 2 {
-	// 	return Value{typ: "error", str: "ERR wrong number of arguments for 'mset' command"}
-	// }
+	if len(args)%2 != 0 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'mset' command"}
+	}
 
-	// SETSMutex.Lock()
-	// defer SETSMutex.Unlock()
-	// keys := args[0].array\
-
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
+	for i := 0; i < len(args); i += 2 {
+		key := args[i].bulk
+		val := args[i+1].bulk
+		SETs[key] = val
+	}
 	return Value{typ: "string", str: "OK"}
-
 }
