@@ -10,6 +10,8 @@ var handelers = map[string]func([]Value) Value{
     "HSET": hset,
     "HGET": hget,
     "HGETALL": hgetall,
+	"Mget": mget,
+	"Mset": mset,
 }
 
 func ping(args []Value) Value {
@@ -126,4 +128,36 @@ func hgetall(args []Value) Value {
 		values = append(values, Value{typ: "bulk", bulk: k}, Value{typ: "bulk", bulk: v})
 	}
 	return Value{typ: "array", array: values}
+}
+func mget(args []Value) Value {
+	if len(args) != 2 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'mget' command"}
+	}
+	keys := args[0].array
+	var values []Value
+	SETSMutex.RLock()
+	defer SETSMutex.RUnlock()
+	for _, key := range keys {
+		val, ok := SETs[key.bulk]
+		if !ok {
+			values = append(values, Value{typ: "null"})
+		} else {
+			values = append(values, Value{typ: "bulk", bulk: val})
+		}
+	}
+	return Value{typ: "array", array: values}
+	
+	
+}
+func mset(args []Value) Value {
+	// if len(args) != 2 {
+	// 	return Value{typ: "error", str: "ERR wrong number of arguments for 'mset' command"}
+	// }
+
+	// SETSMutex.Lock()
+	// defer SETSMutex.Unlock()
+	// keys := args[0].array\
+
+	return Value{typ: "string", str: "OK"}
+
 }
