@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"sync"
 )
 
@@ -14,6 +15,11 @@ var handelers = map[string]func([]Value) Value{
 	"HGETALL": hgetall,
 	"MGET":    mget,
 	"MSET":    mset,
+	"APPEND":  append_,
+	"INCR":    incr,
+	"INCRBY":  incrby,
+	"DECR":    decr,
+	"DECRBY":  decrby,
 }
 
 func ping(args []Value) Value {
@@ -161,4 +167,96 @@ func mset(args []Value) Value {
 		SETs[key] = val
 	}
 	return Value{typ: "string", str: "OK"}
+}
+
+func append_(args []Value) Value {
+	if len(args) != 2 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'append' command "}
+	}
+	key := args[0].bulk
+	val := args[1].bulk
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
+	_, ok := SETs[key]
+	if !ok {
+		SETs[key] = val
+		return Value{typ: "integer", num: len(val)}
+	}
+	SETs[key] += val
+	return Value{typ: "integer", num: len(SETs[key])}
+}
+
+func incr(args []Value) Value {
+	if len(args) != 1 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'incr' command "}
+	}
+	key := args[0].bulk
+	val, ok := SETs[key]  // okay - if err nill if not now i wann  check  for the if err 
+	if ok {
+		SETs[key] = "1"
+		return Value{typ: "integer", num: 1}
+	}
+	valInt, err := strconv.Atoi(val)
+	if err == nil {
+		SETs[key] = strconv.Itoa(valInt + 1)
+		return Value{typ: "integer", num: valInt + 1}
+	}
+	return Value{typ: "error", str: "value is not an integer or out of range"}
+}
+
+func decr(args []Value) Value {
+	if len(args) != 1 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'decr' command "}
+	}
+	key := args[0].bulk
+	val, ok := SETs[key]
+	if !ok {
+		SETs[key] = "-1"
+		return Value{typ: "integer", num: -1}
+	}
+	valInt, err := strconv.Atoi(val)
+	if err == nil {
+		SETs[key] = strconv.Itoa(valInt - 1)
+		return Value{typ: "integer", num: valInt - 1}
+	}
+	return Value{typ: "error", str: "value is not an integer or out of range"}
+}
+
+func incrby(args []Value) Value {
+	if len(args) != 2 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'incrby' command "}
+	}
+	key := args[0].bulk
+	increment, err1 := strconv.Atoi(args[1].bulk)
+
+	val, ok := SETs[key]
+	if !ok {
+		SETs[key] = strconv.Itoa(increment)
+		return Value{typ: "integer", num: increment}
+	}
+	valInt, err2 := strconv.Atoi(val)
+	if err1 != nil || err2 != nil {
+		return Value{typ: "error", str: "value of the key or the increment is not an integer or maybe out of range"}
+	}
+	SETs[key] = strconv.Itoa(valInt + increment)
+	return Value{typ: "integer", num: valInt + increment}
+}
+func decrby(args []Value) Value {
+	if len(args) != 2 {
+		return Value{typ: "error", str: "ERR wrong number of arguments for 'decrby' command "}
+	}
+	key := args[0].bulk
+	decrement, err1 := strconv.Atoi(args[1].bulk)
+
+	val, ok := SETs[key]
+	if !ok {
+		SETs[key] = strconv.Itoa(-1 * decrement)
+		return Value{typ: "integer", num: -1 * decrement}
+	}
+	valInt, err2 := strconv.Atoi(val)
+	if err1 != nil || err2 != nil {
+		return Value{typ: "error", str: "value of the key or the decrement is not an integer or out of range"}
+	}
+	SETs[key] = strconv.Itoa(valInt - decrement)
+	return Value{typ: "integer", num: valInt - decrement}
 }
