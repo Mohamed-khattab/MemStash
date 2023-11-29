@@ -191,8 +191,9 @@ func incr(args []Value) Value {
 		return Value{typ: "error", str: "ERR wrong number of arguments for 'incr' command "}
 	}
 	key := args[0].bulk
-	val, ok := SETs[key]  // okay - if err nill if not now i wann  check  for the if err 
-	if ok {
+	val, ok := SETs[key]  
+	
+	if !ok {
 		SETs[key] = "1"
 		return Value{typ: "integer", num: 1}
 	}
