@@ -6,13 +6,13 @@ This documentation provides an overview of MemStash, a Redis-like server impleme
 ## Extended Redis Commands Support
 
 MemStash currently supports the following common Redis commands:
-| Basic Commands       | Hash Commands           |**Multi SET and Multi GET:** |    
-|-----------------------|-------------------------|-------------------------|
-| PING                  | HSET                    | mset                  |
-| SET                   | HGET                    |mget                  |       
-| GET                   | HGETALL                 |
-| DEL                   |                         |
-|                       |                         |
+| Basic Commands       | Hash Commands           |Multi SET and Multi GET |Value Manipulation Commands|
+|-----------------------|-------------------------|-------------------------|-------------------------|
+| PING                  | HSET                    | mset                  |APPEND | 
+| SET                   | HGET                    |mget                  | INCR |      
+| GET                   | HGETALL                 |                        | INCRBY |
+| DEL                   |                         |                           |DECR |
+|                       |                         |                        |DECRBY|
 
 ## Project Structure Summary
 
