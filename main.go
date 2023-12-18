@@ -49,17 +49,17 @@ func main() {
 		args := value.array[1:]
 		writer := newWriter(conn)
 
-		handler , ok := handelers[command]
+		handler, ok := handelers[command]
 
-		if !ok{
+		if !ok {
 			fmt.Println("Unknown command", command)
 			writer.Write(Value{typ: "error", str: "Unknown command"})
 			continue
 		}
-		if command == "SET"  || command == "HSET" {
+		if command == "SET" || command == "HSET" {
 			aof.write(value)
 		}
-		result :=handler(args)
+		result := handler(args)
 		writer.Write(result)
 
 	}

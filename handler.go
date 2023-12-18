@@ -40,7 +40,7 @@ var HSETSMutex = sync.RWMutex{}
 
 func set(args []Value) Value {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'set' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'set' command"}
 	}
 	key := args[0].bulk
 	val := args[1].bulk
@@ -52,7 +52,7 @@ func set(args []Value) Value {
 
 func get(args []Value) Value {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'get' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'get' command"}
 	}
 	key := args[0].bulk
 	SETSMutex.RLock()
@@ -66,7 +66,7 @@ func get(args []Value) Value {
 }
 func del(args []Value) Value {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'del' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'del' command"}
 	}
 	key := args[0].bulk
 	SETSMutex.Lock()
@@ -81,7 +81,7 @@ func del(args []Value) Value {
 
 func hset(args []Value) Value {
 	if len(args) != 3 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'hset' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'hset' command"}
 	}
 	key := args[0].bulk
 	field := args[1].bulk
@@ -98,7 +98,7 @@ func hset(args []Value) Value {
 }
 func hget(args []Value) Value {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'hget' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'hget' command"}
 	}
 	key := args[0].bulk
 	field := args[1].bulk
@@ -117,7 +117,7 @@ func hget(args []Value) Value {
 }
 func hgetall(args []Value) Value {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'hgetall' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'hgetall' command"}
 	}
 	key := args[0].bulk
 
@@ -137,7 +137,7 @@ func hgetall(args []Value) Value {
 }
 func mget(args []Value) Value {
 	if len(args) < 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'mget' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'mget' command"}
 	}
 	var values []Value
 	SETSMutex.RLock()
@@ -156,7 +156,7 @@ func mget(args []Value) Value {
 }
 func mset(args []Value) Value {
 	if len(args)%2 != 0 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'mset' command"}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'mset' command"}
 	}
 
 	SETSMutex.Lock()
@@ -171,7 +171,7 @@ func mset(args []Value) Value {
 
 func append_(args []Value) Value {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'append' command "}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'append' command "}
 	}
 	key := args[0].bulk
 	val := args[1].bulk
@@ -180,84 +180,94 @@ func append_(args []Value) Value {
 	_, ok := SETs[key]
 	if !ok {
 		SETs[key] = val
-		return Value{typ: "integer", num: len(val)}
+		return Value{typ: "bluk", bulk: strconv.Itoa(len(val))}
 	}
 	SETs[key] += val
-	return Value{typ: "integer", num: len(SETs[key])}
+	return Value{typ: "bluk", bulk: strconv.Itoa(len(SETs[key]))}
 }
 
 func incr(args []Value) Value {
+
 	if len(args) != 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'incr' command "}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'incr' command "}
 	}
 	key := args[0].bulk
-	val, ok := SETs[key]  
-	
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
+
+	val, ok := SETs[key]
 	if !ok {
 		SETs[key] = "1"
-		return Value{typ: "integer", num: 1}
+		return Value{typ: "bulk", bulk: "1"}
 	}
+
 	valInt, err := strconv.Atoi(val)
 	if err == nil {
 		SETs[key] = strconv.Itoa(valInt + 1)
-		return Value{typ: "integer", num: valInt + 1}
+		return Value{typ: "bulk", bulk: strconv.Itoa(valInt + 1)}
 	}
+
 	return Value{typ: "error", str: "value is not an integer or out of range"}
 }
 
 func decr(args []Value) Value {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'decr' command "}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'decr' command "}
 	}
 	key := args[0].bulk
 	val, ok := SETs[key]
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
 	if !ok {
 		SETs[key] = "-1"
-		return Value{typ: "integer", num: -1}
+		return Value{typ: "bulk", bulk: strconv.Itoa(-1)}
 	}
 	valInt, err := strconv.Atoi(val)
 	if err == nil {
 		SETs[key] = strconv.Itoa(valInt - 1)
-		return Value{typ: "integer", num: valInt - 1}
+		return Value{typ: "bulk", bulk: strconv.Itoa(valInt - 1)}
 	}
 	return Value{typ: "error", str: "value is not an integer or out of range"}
 }
 
 func incrby(args []Value) Value {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'incrby' command "}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'incrby' command "}
 	}
 	key := args[0].bulk
 	increment, err1 := strconv.Atoi(args[1].bulk)
-
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
 	val, ok := SETs[key]
 	if !ok {
 		SETs[key] = strconv.Itoa(increment)
-		return Value{typ: "integer", num: increment}
+		return Value{typ: "bulk", bulk: strconv.Itoa(increment)}
 	}
 	valInt, err2 := strconv.Atoi(val)
 	if err1 != nil || err2 != nil {
 		return Value{typ: "error", str: "value of the key or the increment is not an integer or maybe out of range"}
 	}
 	SETs[key] = strconv.Itoa(valInt + increment)
-	return Value{typ: "integer", num: valInt + increment}
+	return Value{typ: "bulk", bulk: strconv.Itoa(valInt + increment)}
 }
+
 func decrby(args []Value) Value {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "ERR wrong number of arguments for 'decrby' command "}
+		return Value{typ: "error", str: "ERR: Wrong number of arguments for 'decrby' command "}
 	}
 	key := args[0].bulk
 	decrement, err1 := strconv.Atoi(args[1].bulk)
-
+	SETSMutex.Lock()
+	defer SETSMutex.Unlock()
 	val, ok := SETs[key]
 	if !ok {
 		SETs[key] = strconv.Itoa(-1 * decrement)
-		return Value{typ: "integer", num: -1 * decrement}
+		return Value{typ: "bulk", bulk: strconv.Itoa(-1 * decrement)}
 	}
 	valInt, err2 := strconv.Atoi(val)
 	if err1 != nil || err2 != nil {
 		return Value{typ: "error", str: "value of the key or the decrement is not an integer or out of range"}
 	}
 	SETs[key] = strconv.Itoa(valInt - decrement)
-	return Value{typ: "integer", num: valInt - decrement}
+	return Value{typ: "bulk", bulk: strconv.Itoa(valInt - decrement)}
 }

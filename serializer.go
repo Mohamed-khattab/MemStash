@@ -26,6 +26,8 @@ func (v Value) Marshal() []byte {
 		return v.marshalString()
 	case "null":
 		return v.marshalNull()
+	case "integer":
+		return v.marshalInteger()
 	default:
 		return []byte{}
 	}
@@ -73,6 +75,13 @@ func (v Value) marshalNull() []byte {
 	return []byte("$-1\r\n")
 }
 
+func (v Value) marshalInteger() []byte {
+	var bytes []byte
+	bytes = append(bytes, INTEGER)
+	bytes = append(bytes, strconv.Itoa(v.num)...)
+	bytes = append(bytes, '\r', '\n')
+	return bytes
+}
 // Write writes the given value to the writer.
 func (w *Writer) Write(v Value) error {
 	_, err := w.writer.Write(v.Marshal())
