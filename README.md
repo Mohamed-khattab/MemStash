@@ -17,7 +17,7 @@ MemStash currently supports the following common Redis commands:
 ## Project Flow 
 
 ## Project Structure Summary
-[![memstash flow](./images/flow.png)]
+![memstash flow](./images/flow.png)
 ### `main.go`
 
 - Main server entry point.
