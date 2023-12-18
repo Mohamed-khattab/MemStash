@@ -1,4 +1,4 @@
-2# MemStash: Redis-Like Server Documentation
+# MemStash: Redis-Like Server Documentation
 
 This documentation provides an overview of MemStash, a Redis-like server implemented in Go. MemStash supports a variety of common Redis commands, offers serialization and deserialization of data in the Redis Serialization Protocol (RESP) format, and includes persistent logging of executed commands in an Append-Only File (AOF). Additionally, it emphasizes future plans for further development, including the addition of commands and a testing section.
 
@@ -14,8 +14,10 @@ MemStash currently supports the following common Redis commands:
 | DEL                   |                         |                           |DECR |
 |                       |                         |                        |DECRBY|
 
-## Project Structure Summary
+## Project Flow 
 
+## Project Structure Summary
+[![memstash flow](./images/flow.png)]
 ### `main.go`
 
 - Main server entry point.
@@ -52,7 +54,7 @@ This project leverages GitHub Actions to automate the synchronization of multipl
 To explore the GitHub Actions workflow configuration, check the `.github/workflows` directory in the repository.
 
 ## Video Walkthrough
-[![memstash overview](./image.png)](https://youtu.be/Aqla8YJ547o)
+[![memstash overview](./images/image.png)](https://youtu.be/Aqla8YJ547o)
 
 
 ## Execution
